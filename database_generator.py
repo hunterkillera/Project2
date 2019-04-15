@@ -68,9 +68,36 @@ def obtain_albums(spotify, artist_id):
 
     return albums_info
 
+''' Given an ID for an album, returns all the tracks on the album '''
+def get_songs(spotify, album_id):
+    tracks = spotify.album_tracks(album_id)
+    tracks = tracks['items']
 
+    #pprint.pprint(tracks)
+    return tracks
+
+''' Given the json object for a track, appends features when someone else is on the track'''
+def get_features(spotify, track, features):
+    track_name = track['name']
+    print(f'Looking for features on {track_name}...')
+    artists = track['artists']
+    for artist in artists:
+        artist_name = artist['name']
+        artist_id = artist['id']
+        artist_info = [artist_name, artist_id]
+
+        if (artist_name != 'Drake') and (artist_info not in features):
+            features.append(artist_info)
+
+    #pprint.pprint(track)
+    return
+
+
+''' Driver code '''
 def main():
     spotify = connect_to_spotify()
+    drakes_related_artists = []
+    drake_features = []
 
     # Will use Drake as a starting point
     drake_id = '3TVXtAsR1Inumwj472S9r4'
@@ -78,7 +105,16 @@ def main():
     drake_albums = obtain_albums(spotify, drake_id)
 
     for album in drake_albums:
-        print(album)
+        name, id = 0, 1
+        print(f'\nChecking for collaborations on {album[name]}...')
+        print('---------------------------------------------------')
+        songs = get_songs(spotify, album[id])
+
+        for song in songs:
+            get_features(spotify, song, drake_features)
+
+    print(f'\nDrake has worked with: {drake_features}')
+
 
 
 
