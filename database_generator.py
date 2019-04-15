@@ -60,8 +60,8 @@ def obtain_albums(spotify, artist_id):
     for album in albums:
         album_name = album['name']
         album_id = album['id']
-        # print(f'FOUND AN ALBUM: {album_name} with an ID of {album_id}')
         album_info = [album_name, album_id]
+
         if album_name not in album_names:
             albums_info.append(album_info)
             album_names.append(album_name)
@@ -73,11 +73,10 @@ def get_songs(spotify, album_id):
     tracks = spotify.album_tracks(album_id)
     tracks = tracks['items']
 
-    #pprint.pprint(tracks)
     return tracks
 
-''' Given the json object for a track, appends features when someone else is on the track'''
-def get_features(spotify, track, features):
+''' Given the json object for a track, appends to 'features' when someone else is on the track'''
+def get_features(main_artist, track, features):
     track_name = track['name']
     print(f'Looking for features on {track_name}...')
     artists = track['artists']
@@ -86,35 +85,49 @@ def get_features(spotify, track, features):
         artist_id = artist['id']
         artist_info = [artist_name, artist_id]
 
-        if (artist_name != 'Drake') and (artist_info not in features):
+        if (artist_name != main_artist) and (artist_info not in features):
             features.append(artist_info)
 
-    #pprint.pprint(track)
     return
 
 
 ''' Driver code '''
-def main():
+def driver(artist):
+    artist_name = artist[0]
+    artist_id = artist[1]
+    print(f"LOOKING FOR {artist_name}'s COLLABORATIONS")
+
     spotify = connect_to_spotify()
-    drakes_related_artists = []
-    drake_features = []
+    artist_collaborators = []
 
-    # Will use Drake as a starting point
-    drake_id = '3TVXtAsR1Inumwj472S9r4'
+    artist_albums = obtain_albums(spotify, artist_id)
 
-    drake_albums = obtain_albums(spotify, drake_id)
-
-    for album in drake_albums:
+    for album in artist_albums:
         name, id = 0, 1
-        print(f'\nChecking for collaborations on {album[name]}...')
+        print(f'\nChecking for collaborations on {album[name]}')
         print('---------------------------------------------------')
         songs = get_songs(spotify, album[id])
 
         for song in songs:
-            get_features(spotify, song, drake_features)
+            get_features(artist_name, song, artist_collaborators)
 
-    print(f'\nDrake has worked with: {drake_features}')
+    print(f'\n{artist_name} has worked with: {artist_collaborators}')
 
+    return artist_collaborators
+    # for artist in artist_collaborators:
+    #     driver(artist)
+
+
+def main():
+    # Will use Drake as a starting point
+    name = 'Drake'
+    id = '3TVXtAsR1Inumwj472S9r4'
+
+    artist = [name, id]
+    driver(artist)
+    # lst = driver(artist)
+    # for artist in lst:
+    #     driver(artist)
 
 
 

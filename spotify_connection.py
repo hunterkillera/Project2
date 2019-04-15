@@ -20,6 +20,10 @@ def main():
     # Pretty print the results because the JSON object is ugly and confusing
     pprint.pprint(artists)
 
+    x = spotify.search('Twenty One Pilots', type='artist')
+
+    pprint.pprint(x)
+
 
 if __name__ == '__main__':
     main()
