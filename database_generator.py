@@ -68,7 +68,14 @@ def obtain_albums(spotify, artist_id):
 
     return albums_info
 
+''' Given an ID for an album, returns all the tracks on the album '''
+def get_songs(spotify, album_id):
+    tracks = spotify.album_tracks(album_id)
 
+    pprint.pprint(tracks)
+    return
+
+''' Driver code '''
 def main():
     spotify = connect_to_spotify()
 
@@ -78,7 +85,9 @@ def main():
     drake_albums = obtain_albums(spotify, drake_id)
 
     for album in drake_albums:
-        print(album)
+        name, id = 0, 1
+        print(f'Checking for collaborations on {album[name]}...')
+        songs = get_songs(spotify, album[id])
 
 
 
