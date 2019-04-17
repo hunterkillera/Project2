@@ -138,10 +138,17 @@ body {
     <h3 align = 'center'>How to use:</h3>
     <p align = 'center'>Simply enter in your favorite artist and see similar artists that they have collaborated with.</p>
     <div class="side">
-    	<form action="/action_page.php" target="_blank">
-    		<input type="text" name="artistname" value="Enter an artist">
-    		<br><br>
-    		<input type="submit" value="Get suggestions!">
+    	<form action="" target="_blank" method="POST">
+            {{ form.hidden_tag() }}
+
+            {{ form.artist.label }}
+            {{ form.artist }}
+
+            {{ form.submit }}
+
+            {% for artist in connected_artists %}
+                <h2>{{ artist }}</h2>
+            {% endfor %}
     	</form> 
     </div>
 </div>

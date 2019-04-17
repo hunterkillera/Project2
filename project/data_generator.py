@@ -76,7 +76,8 @@ def search_artist(spotify, name):
 
     artist_name = query['artists']['items'][0]['name']
     # This ensures that the correct artist was found
-    user_response = input(f"FOUND '{artist_name}'. Is this who you are interested in? If so, hit enter")
+    #user_response = input(f"FOUND '{artist_name}'. Is this who you are interested in? If so, hit enter")
+    user_response = False # TODO: change this
     if user_response:
         print(f'SORRY. Please try entering a different artist')
         return
@@ -165,7 +166,7 @@ def get_connected_artists(inputted_artist):
         - inputted_artist: Name of the artist that the user is interested in. Default is an empty string
 
       returns:
-        - list of artists that the main artist has collaborated wit
+        - list of artists that the main artist has collaborated with (name, id)
     '''
 
     spotify = connect_to_spotify()
@@ -190,12 +191,8 @@ def get_connected_artists(inputted_artist):
         for song in songs:
             get_features(artist_name, song, artist_collaborators)
 
-    #print(f'\n{artist_name} has worked with: {artist_collaborators}')
-
     collaborator_names = list(artist[0] for artist in artist_collaborators)
 
     print(f'\n{artist_name} has collaborated with: {collaborator_names}')
 
-    return artist_collaborators
-
-get_connected_artists('Drake')
+    return collaborator_names

@@ -9,11 +9,15 @@
     <form method="POST" action="">
         {{ form.hidden_tag() }}
 
-        {{ form.artist.label }}
         {{ form.artist }}
 
         {{ form.submit }}
 
+        {% for artist in connected_artists %}
+        <h2>{{ artist }}</h2>
+        {% endfor %}
+
     </form>
+
 </body>
 </html>
