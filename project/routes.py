@@ -2,7 +2,13 @@
 
 from project import app
 from flask import render_template
+from project.data_generator import get_connected_artists
+from project.forms import QueryForm
 
-@app.route('/')
+@app.route('/', methods=['GET', 'POST'])
 def home():
-    return render_template('home.html')
+    form = QueryForm()
+    if form.validate_on_submit():
+        artist_wanted = form.artist.data
+        get_connected_artists(artist_wanted)
+    return render_template('home.html', form=form)

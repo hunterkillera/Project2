@@ -157,19 +157,19 @@ def get_features(main_artist, track, features):
     return
 
 
-
-def get_connected_artists(artist_name):
+def get_connected_artists(inputted_artist):
     ''' Given the name of an artist/band, this function creates and returns a list of all artists that have collaborated
       with that artist
 
       parameters:
-        - artist_name: Name of the artist that the user is interested in
+        - inputted_artist: Name of the artist that the user is interested in. Default is an empty string
 
       returns:
         - list of artists that the main artist has collaborated wit
     '''
+
     spotify = connect_to_spotify()
-    desired_artist = search_artist(spotify, artist_name)
+    desired_artist = search_artist(spotify, inputted_artist)
 
     if not desired_artist:
         return
@@ -193,16 +193,4 @@ def get_connected_artists(artist_name):
     print(f'\n{artist_name} has worked with: {artist_collaborators}')
 
     return artist_collaborators
-
-
-def main():
-    '''This function is just used to test the file'''
-    artist = False
-    while not artist:
-        artist = input('Enter the artist you want to see the connections for: ')
-
-    get_connected_artists(artist_name=artist)
-
-main()
-
 

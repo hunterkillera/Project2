@@ -5,6 +5,15 @@
     <title>Home</title>
 </head>
 <body>
-<h1>This is the home page</h1>
+    <h1>Everything will go on this page</h1>
+    <form method="POST" action="">
+        {{ form.hidden_tag() }}
+
+        {{ form.artist.label }}
+        {{ form.artist }}
+
+        {{ form.submit }}
+
+    </form>
 </body>
 </html>
