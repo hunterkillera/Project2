@@ -146,7 +146,6 @@ def get_features(main_artist, track, features):
     artists = track['artists']
     if artists[0]['name'] != main_artist:
         return
-    pprint.pprint(artists)
     for artist in artists:
         artist_name = artist['name']
         artist_id = artist['id']
@@ -184,10 +183,10 @@ def get_connected_artists(artist_name):
     artist_albums = obtain_albums(spotify, artist_id)
 
     for album in artist_albums:
-        name, id = 0, 1
+        name, artist_id = 0, 1
         print(f'\nChecking for collaborations on {album[name]}')
         print('---------------------------------------------------')
-        songs = get_songs(spotify, album[id])
+        songs = get_songs(spotify, album[artist_id])
 
         for song in songs:
             get_features(artist_name, song, artist_collaborators)
@@ -201,6 +200,8 @@ def get_connected_artists(artist_name):
 
 
 def main():
+    '''This function is just used to test the file'''
+
     artist = input('Enter the artist you want to see the connections for: ')
     if not artist:
         print("Well, you didn't enter an artist so heres everyone Drake has collaborated with")
