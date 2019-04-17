@@ -71,6 +71,7 @@ def search_artist(spotify, name):
     print(f'Searching for {name}\n')
     query = spotify.search(name, type='artist', limit=1)
     if not query['artists']['items']:
+        print(f"ERROR: COULD NOT FIND ARTIST WITH NAME {name}")
         return
 
     artist_name = query['artists']['items'][0]['name']
@@ -109,7 +110,6 @@ def obtain_albums(spotify, artist_id):
         if album_name not in album_names:
             albums_info.append(album_info)
             album_names.append(album_name)
-
 
     return albums_info
 
@@ -167,12 +167,11 @@ def get_connected_artists(artist_name):
 
       returns:
         - list of artists that the main artist has collaborated wit
-         '''
+    '''
     spotify = connect_to_spotify()
     desired_artist = search_artist(spotify, artist_name)
 
     if not desired_artist:
-        print(f"ERROR: COULD NOT FIND ARTIST WITH NAME {artist_name}")
         return
 
     artist_name = desired_artist[0]
@@ -193,19 +192,17 @@ def get_connected_artists(artist_name):
 
     print(f'\n{artist_name} has worked with: {artist_collaborators}')
 
-
     return artist_collaborators
-    # for artist in artist_collaborators:
-    #     driver(artist)
 
 
 def main():
     '''This function is just used to test the file'''
+    artist = False
+    while not artist:
+        artist = input('Enter the artist you want to see the connections for: ')
 
-    artist = input('Enter the artist you want to see the connections for: ')
-    if not artist:
-        print("Well, you didn't enter an artist so heres everyone Drake has collaborated with")
-        artist = 'Drake'
     get_connected_artists(artist_name=artist)
 
 main()
+
+
