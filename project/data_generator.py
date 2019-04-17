@@ -190,7 +190,12 @@ def get_connected_artists(inputted_artist):
         for song in songs:
             get_features(artist_name, song, artist_collaborators)
 
-    print(f'\n{artist_name} has worked with: {artist_collaborators}')
+    #print(f'\n{artist_name} has worked with: {artist_collaborators}')
+
+    collaborator_names = list(artist[0] for artist in artist_collaborators)
+
+    print(f'\n{artist_name} has collaborated with: {collaborator_names}')
 
     return artist_collaborators
 
+get_connected_artists('Drake')
