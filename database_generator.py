@@ -32,6 +32,10 @@ Some notes:
     - Later on, we may want to store the name of the songs that artists worked on together, but for now we wont need to
       include this (for simplicity sake)
 
+
+Currently this script only makes connections when the desired artist is the head of the song. We will have to update
+this somehow to make it add connections where they are featured in songs (if possible).  This change will most likely
+take place in the 'get_features' function
 '''
 
 import spotipy
@@ -140,6 +144,9 @@ def get_features(main_artist, track, features):
     track_name = track['name']
     print(f'Looking for features on {track_name}...')
     artists = track['artists']
+    if artists[0]['name'] != main_artist:
+        return
+    pprint.pprint(artists)
     for artist in artists:
         artist_name = artist['name']
         artist_id = artist['id']
