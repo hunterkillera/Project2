@@ -38,8 +38,10 @@ import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
 import pprint
 
-''' Obtains and returns connection to Spotify's API '''
+
 def connect_to_spotify():
+    ''' Obtains and returns connection to Spotify's API '''
+
     # Project-specific connection information
     client_id = '4394f6c6ce164881abb7cf4b46aa7c2b'
     client_secret = '838d2b7c59804892a71d4d26859f7ec3'  # TODO: Hide this
@@ -49,9 +51,47 @@ def connect_to_spotify():
     connection = spotipy.Spotify(client_credentials_manager=credentials)
     return connection
 
-''' Given an artist's ID, returns all of their albums (id and name) 
-This function also deals with duplicates.  There's no reason to parse through the same album more than once'''
+
+
+def search_artist(spotify, name):
+    '''Searches for an artist on Spotify and returns their name and unique ID
+
+    parameters:
+        - spotify: connection to Spotify's API
+        - name: name of the artist/band the user is interested in
+
+    returns:
+        - Artist's name and unique ID if found on Spotify
+        - Null if not found on Spotify '''
+
+    print(f'Searching for {name}\n')
+    query = spotify.search(name, type='artist', limit=1)
+    if not query['artists']['items']:
+        return
+
+    artist_name = query['artists']['items'][0]['name']
+    # This ensures that the correct artist was found
+    user_response = input(f"FOUND '{artist_name}'. Is this who you are interested in? If so, hit enter")
+    if user_response:
+        print(f'SORRY. Please try entering a different artist')
+        return
+    artist_id = query['artists']['items'][0]['id']
+    artist_info = (artist_name, artist_id)
+
+    return artist_info
+
+
 def obtain_albums(spotify, artist_id):
+    ''' Given an artist's ID, returns all of their albums (id and name)
+    This function also deals with duplicates.  There's no reason to parse through the same album more than once
+
+    parameters:
+        - spotify: connection to Spotify's API
+        - artist_id: unique artist ID that user is interested in
+
+    returns:
+        - a list of all of the artist's albums (ID and name) on Spotify '''
+
     album_names = []
     albums_info = []
     albums_json = spotify.artist_albums(artist_id=artist_id)
@@ -66,17 +106,37 @@ def obtain_albums(spotify, artist_id):
             albums_info.append(album_info)
             album_names.append(album_name)
 
+
     return albums_info
 
-''' Given an ID for an album, returns all the tracks on the album '''
+
+
 def get_songs(spotify, album_id):
+    ''' Given an ID for an album, returns all the tracks on the album
+    parameters:
+        - spotify: connection to Spotify's API
+        - album_id: album's unique ID
+
+    returns:
+        - a list of all tracks on the album '''
+
     tracks = spotify.album_tracks(album_id)
     tracks = tracks['items']
 
     return tracks
 
-''' Given the json object for a track, appends to 'features' when someone else is on the track'''
+
+
 def get_features(main_artist, track, features):
+    ''' Given the json object for a track, appends to 'features' when someone else is on the track
+    parameters:
+        - main_artist: The head artist on the track (the artist the user is interested in)
+        - track: The song json object
+        - features: list of artists that have collaborated with the main_artist
+
+    returns:
+        - nothing
+    '''
     track_name = track['name']
     print(f'Looking for features on {track_name}...')
     artists = track['artists']
@@ -91,15 +151,29 @@ def get_features(main_artist, track, features):
     return
 
 
-''' Driver code '''
-def driver(artist):
-    artist_name = artist[0]
-    artist_id = artist[1]
+
+def get_connected_artists(artist_name):
+    ''' Given the name of an artist/band, this function creates and returns a list of all artists that have collaborated
+      with that artist
+
+      parameters:
+        - artist_name: Name of the artist that the user is interested in
+
+      returns:
+        - list of artists that the main artist has collaborated wit
+         '''
+    spotify = connect_to_spotify()
+    desired_artist = search_artist(spotify, artist_name)
+
+    if not desired_artist:
+        print(f"ERROR: COULD NOT FIND ARTIST WITH NAME {artist_name}")
+        return
+
+    artist_name = desired_artist[0]
+    artist_id = desired_artist[1]
     print(f"LOOKING FOR {artist_name}'s COLLABORATIONS")
 
-    spotify = connect_to_spotify()
     artist_collaborators = []
-
     artist_albums = obtain_albums(spotify, artist_id)
 
     for album in artist_albums:
@@ -113,24 +187,17 @@ def driver(artist):
 
     print(f'\n{artist_name} has worked with: {artist_collaborators}')
 
+
     return artist_collaborators
     # for artist in artist_collaborators:
     #     driver(artist)
 
 
 def main():
-    # Will use Drake as a starting point
-    name = 'Drake'
-    id = '3TVXtAsR1Inumwj472S9r4'
+    artist = input('Enter the artist you want to see the connections for: ')
+    if not artist:
+        print("Well, you didn't enter an artist so heres everyone Drake has collaborated with")
+        artist = 'Drake'
+    get_connected_artists(artist_name=artist)
 
-    artist = [name, id]
-    driver(artist)
-    # lst = driver(artist)
-    # for artist in lst:
-    #     driver(artist)
-
-
-
-
-if __name__ == '__main__':
-    main()
+main()
