@@ -1,20 +1,16 @@
 from py2neo import Graph, Node, Relationship
 import cgi
 
-###get artist name from html form
-form = cgi.FieldStorage()
-artist =  form.getvalue('artistname')
 
+
+def
 ###connect to host
 uri = "bolt://localhost:7687"
 user = "neo4j"
-password = "leah123"
+password = "password"
 
 ###create graph
 g = Graph(uri=uri, user=user, password=password)
-
-### optionally clear the graph
-# g.delete_all()
 
 ### THIS PRINTS TOTAL NUMBER OF NODES & RELATIONSHIPS
 print(len(g.nodes))
