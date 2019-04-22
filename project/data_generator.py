@@ -38,10 +38,16 @@ this somehow to make it add connections where they are featured in songs (if pos
 take place in the 'get_features' function
 '''
 
+
+
+
+
+
+
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
 import pprint
-from py2neo import Graph, Node, Relationship
+from py2neo import Graph, Node, Relationship, NodeMatcher
 
 
 def connect_to_spotify():
@@ -160,6 +166,15 @@ def get_features(main_artist, track, features):
 
 
 def get_connected_artists(inputted_artist):
+    # searches our neo4j database, if artist is in, returns that, if not searches spotify
+    uri = "bolt://localhost:7687"
+    user = "neo4j"
+    password = "leah123"
+    g = Graph(uri=uri, user=user, password=password)
+    matcher = NodeMatcher(g)
+    if matcher.match("Artist", major = "yes", name=str(inputted_artist)).first() != None:
+        return list(matcher.match("Artist", collab=str(inputted_artist)))
+
     ''' Given the name of an artist/band, this function creates and returns a list of all artists that have collaborated
       with that artist
 
@@ -201,10 +216,10 @@ def get_connected_artists(inputted_artist):
     password = "leah123"
     g = Graph(uri=uri, user=user, password=password)
     tx = g.begin()
-    a = Node("Artist", name=str(artist_name))
+    a = Node("Artist", name=str(artist_name), major="yes")
     tx.create(a)
     for i in collaborator_names:
-        collaborator_name = Node("Artist", name=str(i))
+        collaborator_name = Node("Artist", name=str(i), collab=str(artist_name), major="no")
         collaborator_rel = Relationship(a, "Collabed with", collaborator_name)
         tx.create(collaborator_name)
         tx.create(collaborator_rel)
