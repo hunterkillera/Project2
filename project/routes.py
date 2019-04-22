@@ -15,14 +15,21 @@ def home():
         artist_wanted = form.artist.data
 
         # Initially searches database for the artist
-        if search_nodes_for_artist(artist_wanted, g):
-            print(f'FOUND {artist_wanted}!')
-            for related_artist in get_relationships(artist_wanted, g):
-                print(related_artist) #TODO: send this to HTML Form
-
+        if artist_in_db(artist_wanted, g):
+            print(f"FOUND {artist_wanted} in database")
+            # Has the artist been explicitly searched for?
+            if artist_searched_for(artist_wanted, g):
+                print(f'...and he has been searched for previously!')
+                connected_artists = get_relationships(artist_wanted, g)
+            else:
+                print('...but he has not been searched for!')
+                connected_artists = get_connected_artists(artist_wanted)
+                update_artist(artist_wanted, g, connected_artists)
+        # Artist is not in database yet
         else:
             print(f'Did not find {artist_wanted}... Adding artist to database now')
-            add_artist_to_db(artist_wanted, g)
+            connected_artists = get_connected_artists(artist_wanted)
+            add_artist_to_db(artist_wanted, g, connected_artists)
 
         '''
         
@@ -48,5 +55,4 @@ def home():
         '''
 
 
-        connected_artists= get_connected_artists(artist_wanted)
     return render_template('group5.html', form=form, connected_artists=connected_artists)

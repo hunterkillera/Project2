@@ -143,7 +143,7 @@ def get_features(main_artist, track, features):
         - nothing
     '''
     track_name = track['name']
-    print(f'Looking for features on {track_name}...')
+    #print(f'Looking for features on {track_name}...')
     artists = track['artists']
     if artists[0]['name'] != main_artist:
         return
@@ -177,15 +177,15 @@ def get_connected_artists(inputted_artist):
 
     artist_name = desired_artist[0]
     artist_id = desired_artist[1]
-    print(f"LOOKING FOR {artist_name}'s COLLABORATIONS")
+    #print(f"LOOKING FOR {artist_name}'s COLLABORATIONS")
 
     artist_collaborators = []
     artist_albums = obtain_albums(spotify, artist_id)
 
     for album in artist_albums:
         name, artist_id = 0, 1
-        print(f'\nChecking for collaborations on {album[name]}')
-        print('---------------------------------------------------')
+        #print(f'\nChecking for collaborations on {album[name]}')
+        #print('---------------------------------------------------')
         songs = get_songs(spotify, album[artist_id])
 
         for song in songs:
@@ -193,6 +193,6 @@ def get_connected_artists(inputted_artist):
 
     collaborator_names = list(artist[0] for artist in artist_collaborators)
 
-    print(f'\n{artist_name} has collaborated with: {collaborator_names}')
+    #print(f'\n{artist_name} has collaborated with: {collaborator_names}')
 
     return collaborator_names
