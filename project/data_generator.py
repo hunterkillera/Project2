@@ -41,6 +41,7 @@ take place in the 'get_features' function
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
 import pprint
+from py2neo import Graph, Node, Relationship
 
 
 def connect_to_spotify():
@@ -194,5 +195,21 @@ def get_connected_artists(inputted_artist):
     collaborator_names = list(artist[0] for artist in artist_collaborators)
 
     print(f'\n{artist_name} has collaborated with: {collaborator_names}')
+
+    uri = "bolt://localhost:7687"
+    user = "neo4j"
+    password = "leah123"
+    g = Graph(uri=uri, user=user, password=password)
+    tx = g.begin()
+    a = Node("Artist", name=str(artist_name))
+    tx.create(a)
+    for i in collaborator_names:
+        collaborator_name = Node("Artist", name=str(i))
+        collaborator_rel = Relationship(a, "Collabed with", collaborator_name)
+        tx.create(collaborator_name)
+        tx.create(collaborator_rel)
+    tx.commit()
+
+
 
     return collaborator_names
