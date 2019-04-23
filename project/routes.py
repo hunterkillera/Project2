@@ -9,7 +9,7 @@ from project.queries import *
 
 @app.route('/', methods=['GET', 'POST'])
 def home():
-    connected_artists = []
+    connected_artists = {}
     form = QueryForm()
 
     if form.validate_on_submit():
@@ -19,6 +19,7 @@ def home():
         if artist_in_db(artist_wanted):
             print(f'Found {artist_wanted} in database!')
             connected_artists = get_connected_artists_from_db(artist_wanted)
+            print(type(connected_artists))
             # Adds to database using Spotify's API
         else:
             print(f'Did not find {artist_wanted} in database... adding now')
