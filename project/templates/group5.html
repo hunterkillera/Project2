@@ -146,8 +146,14 @@ body {
 
             {{ form.submit }}
             <br>
-            {% for artist in connected_artists %}
+            {% for artist, songs in connected_artists.items() %}
                 <h1>{{ artist }}</h1>
+
+                {% for song in songs %}
+                    <b> {{ song }} </b>
+                    <br>
+                {%  endfor %}
+
             {% endfor %}
     	</form>
     </div>
