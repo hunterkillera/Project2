@@ -1,55 +1,8 @@
-''' This file will use Spotify's API to fill a neo4j database with data pertaining to what artists are related to each
-other
-
-Pseodocode:
-Connect to spotify
-Start with drake (id = '3TVXtAsR1Inumwj472S9r4' ) # I figured Drake would be a good artist to start with
-Obtain a list of all drake's albums using the spotify.artist_albums(artist_id) function (store the album name and album id)
-For album in drakes_albums:
-    use spotify.album_tracks(album) to obtain a list of all songs for each album
-
-    For track in album_tracks:
-        If another artist on track:
-            create and store relationship between drake and artist
-        else:
-            move on to next track
-
-
-
-
-The above pseudocode should store all of the artists that have worked with Drake, which is a good start.
-If we can get that code to work, we can easily modify it to iterate through other artists.  This should be able to fill
-our database.
-
-
-Some notes:
-    - Spotify's API returns JSON objects which are ugly when printed. Use pprint.pprint(result) rather than print(result)
-      to make the output more clear and user-friendly
-    - The spotify.artist_albums tends to return duplicates of albums (since there are different versions of the album)
-      so we can deal with this when the time comes.  It's not a big deal but could significantly slow down our code
-    - Every artist, album and track have a unique ID.  These will be very useful in our code. Rather than searhcing by
-      an artist's name, it will make more sense to search using their ID.
-    - Later on, we may want to store the name of the songs that artists worked on together, but for now we wont need to
-      include this (for simplicity sake)
-
-
-Currently this script only makes connections when the desired artist is the head of the song. We will have to update
-this somehow to make it add connections where they are featured in songs (if possible).  This change will most likely
-take place in the 'get_features' function
-'''
-
-
-
-
-
-
-
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
-import pprint
 from project import graph
-from py2neo import Node, Relationship, NodeMatcher
-import re
+from py2neo import Node, Relationship
+
 
 def connect_to_spotify():
     ''' Obtains and returns connection to Spotify's API '''
@@ -200,7 +153,6 @@ def get_connected_artists_from_spotify(inputted_artist):
         #print(f'\nChecking for collaborations on {album[name]}')
         #print('---------------------------------------------------')
         songs = get_songs(spotify, album[artist_id])
-
         for song in songs:
             get_features(artist_name, song, artist_collaborators)
 

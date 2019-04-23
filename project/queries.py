@@ -1,5 +1,6 @@
-from py2neo import Node, Relationship, NodeMatcher, RelationshipMatcher
+from py2neo import NodeMatcher, RelationshipMatcher
 from project import graph
+from collections import OrderedDict
 
 def artist_in_db(artist):
     ''' Checks to see if the artist has already been searched for
@@ -30,6 +31,7 @@ def get_connected_artists_from_db(artist):
     for end_node in end_nodes:
         rel = dict(matcher.match(nodes=(start_node, end_node), r_type="Collabed with").first())
         songs = rel['song']
+        songs = list(OrderedDict.fromkeys(songs))
         end_node = dict(end_node)
         collabed_artist = end_node['name']
 
