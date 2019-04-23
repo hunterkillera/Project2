@@ -50,7 +50,7 @@ body {
 }
 
 /* Column container */
-.row {  
+.row {
 }
 
 /* style the form */
@@ -84,7 +84,7 @@ body {
 	border-bottom: 2px solid #FFFFFF;
 	border-top-style: none;
 	border-right-style: none;
-	border-left-style: none;	
+	border-left-style: none;
 	color: #FFFFFF;
 }
 .side input[type="submit"]:hover,
@@ -100,14 +100,14 @@ body {
 }
 
 /* Main column */
-.main {   
+.main {
   flex: 100%;
   background-color: white;
   padding: 20px;
 
 /* Responsive layout - when the screen is less than 700px wide, make the two columns stack on top of each other instead of next to each other */
 @media screen and (max-width: 700px) {
-  .row {   
+  .row {
     flex-direction: column;
   }
 }
@@ -145,11 +145,11 @@ body {
             {{ form.artist }}
 
             {{ form.submit }}
-
+            <br>
             {% for artist in connected_artists %}
-                <h2>{{ artist }}</h2>
+                <h1>{{ artist }}</h1>
             {% endfor %}
-    	</form> 
+    	</form>
     </div>
 </div>
 </div>
