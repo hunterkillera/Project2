@@ -47,8 +47,9 @@ take place in the 'get_features' function
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
 import pprint
-from py2neo import Graph, Node, Relationship, NodeMatcher
-
+from project import graph
+from py2neo import Node, Relationship, NodeMatcher
+import re
 
 def connect_to_spotify():
     ''' Obtains and returns connection to Spotify's API '''
@@ -150,31 +151,27 @@ def get_features(main_artist, track, features):
         - nothing
     '''
     track_name = track['name']
-    print(f'Looking for features on {track_name}...')
+
+    #print(f'Looking for features on {track_name}...')
     artists = track['artists']
     if artists[0]['name'] != main_artist:
         return
     for artist in artists:
         artist_name = artist['name']
-        artist_id = artist['id']
-        artist_info = [artist_name, artist_id]
 
-        if (artist_name != main_artist) and (artist_info not in features):
-            features.append(artist_info)
+        if artist_name != main_artist:
+            if artist_name not in list(features.keys()):
+                features[artist_name] = [track_name]
+            else:
+                songs = features[artist_name]
+                songs.append(track_name)
+                features[artist_name] = songs
+
 
     return
 
 
-def get_connected_artists(inputted_artist):
-    # searches our neo4j database, if artist is in, returns that, if not searches spotify
-    uri = "bolt://localhost:7687"
-    user = "neo4j"
-    password = "leah123"
-    g = Graph(uri=uri, user=user, password=password)
-    matcher = NodeMatcher(g)
-    if matcher.match("Artist", major = "yes", name=str(inputted_artist)).first() != None:
-        return list(matcher.match("Artist", collab=str(inputted_artist)))
-
+def get_connected_artists_from_spotify(inputted_artist):
     ''' Given the name of an artist/band, this function creates and returns a list of all artists that have collaborated
       with that artist
 
@@ -195,36 +192,41 @@ def get_connected_artists(inputted_artist):
     artist_id = desired_artist[1]
     print(f"LOOKING FOR {artist_name}'s COLLABORATIONS")
 
-    artist_collaborators = []
+    artist_collaborators = {}
     artist_albums = obtain_albums(spotify, artist_id)
 
     for album in artist_albums:
         name, artist_id = 0, 1
-        print(f'\nChecking for collaborations on {album[name]}')
-        print('---------------------------------------------------')
+        #print(f'\nChecking for collaborations on {album[name]}')
+        #print('---------------------------------------------------')
         songs = get_songs(spotify, album[artist_id])
 
         for song in songs:
             get_features(artist_name, song, artist_collaborators)
 
-    collaborator_names = list(artist[0] for artist in artist_collaborators)
-
-    print(f'\n{artist_name} has collaborated with: {collaborator_names}')
-
-    uri = "bolt://localhost:7687"
-    user = "neo4j"
-    password = "leah123"
-    g = Graph(uri=uri, user=user, password=password)
-    tx = g.begin()
+    tx = graph.begin()
     a = Node("Artist", name=str(artist_name), major="yes")
     tx.create(a)
-    for i in collaborator_names:
-        collaborator_name = Node("Artist", name=str(i), collab=str(artist_name), major="no")
-        collaborator_rel = Relationship(a, "Collabed with", collaborator_name)
+    for key, value in artist_collaborators.items():
+        collaborator_name = Node("Artist", name=str(key), collab=str(artist_name), major="no")
+        collaborator_rel = Relationship(a, "Collabed with", collaborator_name, song=value)
         tx.create(collaborator_name)
         tx.create(collaborator_rel)
     tx.commit()
 
+    print(f'Collavorators: {artist_collaborators}')
+
+    return artist_collaborators
 
 
-    return collaborator_names
+def main():
+    name = input('enter an artist')
+    get_connected_artists_from_spotify(name)
+
+if __name__== '__main__':
+    main()
+
+
+
+'''features for Drake:
+{artist1: [song1, song2, songn] , artist2: [song1, song2, songn}'''
